@@ -1,10 +1,10 @@
 <?php
 include_once("../db.php");
-include_once("../town_city.php");
+include_once("../province.php");
 
 $db = new Database();
 $connection = $db->getConnection();
-$town = new Town($db);
+$province = new Province($db);
 
 ?>
 <!DOCTYPE html>
@@ -12,7 +12,7 @@ $town = new Town($db);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Town Records</title>
+    <title>Province Records</title>
     <link rel="stylesheet" type="text/css" href="../css/styles.css">
 </head>
 <body>
@@ -21,7 +21,7 @@ $town = new Town($db);
     <?php include('../includes/navbar.php'); ?>
 
     <div class="content">
-    <h2>Town Records</h2>
+    <h2>Province Records</h2>
     <table class="orange-theme">
         <thead>
             <tr>
@@ -34,15 +34,15 @@ $town = new Town($db);
             
             
             <?php
-            $results = $town->displayAll(); 
+            $results = $province->displayAll(); 
             foreach ($results as $result) {
             ?>
             <tr>
                 <td><?php echo $result['name']; ?></td>
                 <td>
-                    <a href="town_edit.php?id=<?php echo $result['id']; ?>">Edit</a>
+                    <a href="province_edit.php?id=<?php echo $result['id']; ?>">Edit</a>
                     |
-                    <a href="town_delete.php?id=<?php echo $result['id']; ?>">Delete</a>
+                    <a href="province_edit.php?id=<?php echo $result['id']; ?>">Delete</a>
                 </td>
             </tr>
         <?php } ?>
@@ -51,7 +51,7 @@ $town = new Town($db);
         </tbody>
     </table>
         
-    <a class="button-link" href="town_add.php">Add New Record</a>
+    <a class="button-link" href="province_add.php">Add New Record</a>
 
         </div>
         

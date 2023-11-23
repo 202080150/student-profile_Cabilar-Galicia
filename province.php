@@ -1,5 +1,40 @@
+<!-- <?php
+// include_once("db.php"); // Include the Database class file
+
+// class Province {
+//     private $db;
+
+//     public function __construct($db) {
+//         $this->db = $db;
+//     }
+
+//     public function getAll() {
+//         try {
+//             $sql = "SELECT * FROM province";
+//             $stmt = $this->db->getConnection()->prepare($sql);
+//             $stmt->execute();
+
+//             return $stmt->fetchAll(PDO::FETCH_ASSOC);
+//         } catch (PDOException $e) {
+//             // Handle errors (log or display)
+//             throw $e; // Re-throw the exception for higher-level handling
+//         }
+//     }
+// }
+?> -->
+
+<!-- town_city.php
+
+<form action="town_city.php" method="post">
+    <label for="name">Town/City Name:</label>
+    <input type="text" name="name" required>
+
+    <input type="submit" value="Save">
+</form> -->
+
+
 <?php
-include_once("db.php"); // Include the Database class file
+include_once("db.php"); // Include the file with the Database class
 
 class Province {
     private $db;
@@ -8,17 +43,136 @@ class Province {
         $this->db = $db;
     }
 
-    public function getAll() {
+    public function create($data) {
         try {
-            $sql = "SELECT * FROM province";
+            // Prepare the SQL INSERT statement
+            $sql = "INSERT INTO province(name) VALUES(:name);";
             $stmt = $this->db->getConnection()->prepare($sql);
+
+            // Bind values to placeholders
+            $stmt->bindParam(':name', $data['name']);
+
+            // Execute the INSERT query
             $stmt->execute();
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            // Check if the insert was successful
+             
+            if($stmt->rowCount() > 0)
+            {
+                return $this->db->getConnection()->lastInsertId();
+            }
+
         } catch (PDOException $e) {
-            // Handle errors (log or display)
+            // Handle any potential errors here
+            echo "Error: " . $e->getMessage();
             throw $e; // Re-throw the exception for higher-level handling
         }
     }
+
+    public function read($id) {
+        try {
+            $connection = $this->db->getConnection();
+
+            $sql = "SELECT * FROM province WHERE id = :id";
+            $stmt = $connection->prepare($sql);
+            $stmt->bindValue(':id', $id);
+            $stmt->execute();
+
+            // Fetch the town data as an associative array
+            $studentData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            return $provinceData;
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            throw $e; // Re-throw the exception for higher-level handling
+        }
+    }
+
+    public function update($id, $data) {
+        try {
+            $sql = "UPDATE province SET
+                    name = :name
+                    WHERE id = :id";
+
+            $stmt = $this->db->getConnection()->prepare($sql);
+            // Bind parameters
+            $stmt->bindValue(':name', $data['name']);
+
+            // Execute the query
+            $stmt->execute();
+
+            return $stmt->rowCount() > 0;
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            throw $e; // Re-throw the exception for higher-level handling
+        }
+    }
+
+    public function delete($id) {
+        try {
+            $sql = "DELETE FROM province WHERE id = :id";
+            $stmt = $this->db->getConnection()->prepare($sql);
+            $stmt->bindValue(':id', $id);
+            $stmt->execute();
+
+            // Check if any rows were affected (record deleted)
+            if ($stmt->rowCount() > 0) {
+                return true; // Record deleted successfully
+            } else {
+                return false; // No records were deleted (student_id not found)
+            }
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            throw $e; // Re-throw the exception for higher-level handling
+        }
+    }
+
+    public function displayAll(){
+        try {
+            $sql = "SELECT * FROM province LIMIT 10"; // Modify the table name to match your database
+            $stmt = $this->db->getConnection()->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $result;
+        } catch (PDOException $e) {
+            // Handle any potential errors here
+            echo "Error: " . $e->getMessage();
+            throw $e; // Re-throw the exception for higher-level handling
+        }
+    }
+
+
+    public function testReadtown($id) {
+        $provinceData = $this->read($id);
+
+        if ($provinceData !== false) {
+            echo "Test passed. Student data read successfully: " . PHP_EOL;
+            print_r($provinceData);
+        } else {
+            echo "Test failed. Unable to read student data." . PHP_EOL;
+        }
+    }
+
+    public function testUpdateProvince($id, $data) {
+        $success = $this->update($id, $data);
+
+        if ($success) {
+            echo "Test passed. Student data updated successfully." . PHP_EOL;
+        } else {
+            echo "Test failed. Unable to update student data." . PHP_EOL;
+        }
+    }
+
+    public function testDeleteProvince($id) {
+        $deleted = $this->delete($id);
+
+        if ($deleted) {
+            echo "Test passed. Student data deleted successfully." . PHP_EOL;
+        } else {
+            echo "Test failed. Unable to delete student data." . PHP_EOL;
+        }
+    }
 }
+
+
 ?>
