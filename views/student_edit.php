@@ -8,7 +8,7 @@ if (isset($_GET['id'])) {
     // Fetch student data by ID from the database
     $db = new Database();
     $student = new Student($db);
-    $studentData = $student->read($id); // Implement the read method in the Student class
+    $studentData = $student->readStudentAndDetails($id); // Implement the read method in the Student class
 
     if ($studentData) {
         // The student data is retrieved, and you can pre-fill the edit form with this data.
@@ -28,17 +28,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         'last_name' => $_POST['last_name'],
         'gender' => $_POST['gender'],
         'birthday' => $_POST['birthday'],
+        'details_id' => $_POST['details_id'],
+        'student_id' => $_POST['student_id'],
+        'contact_number' => $_POST['contact_number'],
+        'street' => $_POST['street'],
+        'town_city' => $_POST['town_city'],
+        'province' => $_POST['province'],
+        'zip_code' => $_POST['zip_code'],
     ];
 
     $db = new Database();
     $student = new Student($db);
 
     // Call the edit method to update the student data
-    if ($student->update($id, $data)) {
-        echo "Record updated successfully.";
+    if ($student->updateAllWithStudents($id, $data)) {
     } else {
         echo "Failed to update the record.";
     }
+    header("Location: students.view.php");
 }
 ?>
 <!DOCTYPE html>
@@ -58,8 +65,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <h2>Edit Student Information</h2>
     <form action="" method="post">
         <input type="hidden" name="id" value="<?php echo $studentData['id']; ?>">
-        
-        <label for="student_number">Student Number:</label>
+
+        <label for="student_number">First Name:</label>
         <input type="text" name="student_number" id="student_number" value="<?php echo $studentData['student_number']; ?>">
         
         <label for="first_name">First Name:</label>
@@ -76,6 +83,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         <label for="birthday">Birthdate:</label>
         <input type="text" name="birthday" id="birthday" value="<?php echo $studentData['birthday']; ?>">
+
+        <input type="hidden" name="details_id" value="<?php echo $studentData['details_id']; ?>">
+        <input type="hidden" name="student_id" value="<?php echo $studentData['student_id']; ?>">
+
+        <label for="contact_number">Contact Number:</label>
+        <input type="text" name="contact_number" id="contact_number" value="<?php echo $studentData['contact_number']; ?>">
+        
+        <label for="street">Street:</label>
+        <input type="text" name="street" id="street" value="<?php echo $studentData['street']; ?>">
+        
+        <label for="town_city">Town City:</label>
+        <input type="text" name= "town_city" id="town_city" value="<?php echo $studentData['town_city']; ?>">
+        
+        <label for="province">Province:</label>
+        <input type="text" name="province" id="province" value="<?php echo $studentData['province']; ?>">
+        
+        <label for="zip_code">ZIP Code:</label>
+        <input type="text" name="zip_code" id="zip_code" value="<?php echo $studentData['zip_code']; ?>">
         
         <input type="submit" value="Update">
     </form>

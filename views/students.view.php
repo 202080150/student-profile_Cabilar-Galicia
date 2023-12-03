@@ -6,6 +6,8 @@ $db = new Database();
 $connection = $db->getConnection();
 $student = new Student($db);
 
+$getStudentDetails = $student -> getAllWithStudentDetails();
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,11 +28,15 @@ $student = new Student($db);
         <thead>
             <tr>
                 <th>Student Number</th>
-                <th>First Name</th>
-                <th>Middle Name</th>
-                <th>Last Name</th>
+                <th>Student ID</th>
+                <th>Full Name</th>
                 <th>Gender</th>
                 <th>Birthdate</th>
+                <th>Contact Number</th>
+                <th>Street</th>
+                <th>Town City</th>
+                <th>Province</th>
+                <th>ZIP Code</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -40,32 +46,33 @@ $student = new Student($db);
             
             
             <?php
-            $results = $student->displayAll(); 
-            foreach ($results as $result) {
-            ?>
+            // $results = $student->displayAll(); 
+            foreach ($getStudentDetails as $result): ?>
             <tr>
                 <td><?php echo $result['student_number']; ?></td>
-                <td><?php echo $result['first_name']; ?></td>
-                <td><?php echo $result['middle_name']; ?></td>
-                <td><?php echo $result['last_name']; ?></td>
+                <td><?php echo $result['student_id']; ?></td>
+                <td><?php echo $result['full_name']; ?></td>
                 <td><?php echo $result['gender']; ?></td>
                 <td><?php echo $result['birthday']; ?></td>
+                <td><?php echo $result['contact_number']; ?></td>
+                <td><?php echo $result['street']; ?></td>
+                <td><?php echo $result['town_city']; ?></td>
+                <td><?php echo $result['province']; ?></td>
+                <td><?php echo $result['zip_code']; ?></td>
                 <td>
-                    <a href="student_edit.php?id=<?php echo $result['id']; ?>">Edit</a>
-                    |
-                    <a href="student_delete.php?id=<?php echo $result['id']; ?>">Delete</a>
+                    <a href="student_edit.php?id=<?php echo $result['ids']; ?>">Edit</a>
+                    <a href="student_delete.php?id=<?php echo $result['ids']; ?>">Delete</a>
                 </td>
             </tr>
-        <?php } ?>
+            <?php endforeach ?>
 
            
         </tbody>
     </table>
-        
-    <a class="button-link" href="student_add.php">Add New Record</a>
 
-        </div>
-        
+        <a class="button-link" href="student_add.php">Add New Record</a>
+    </div>
+
         <!-- Include the header -->
   
     <?php include('../templates/footer.html'); ?>

@@ -1,38 +1,3 @@
-<!-- <?php
-// include_once("db.php"); // Include the Database class file
-
-// class Province {
-//     private $db;
-
-//     public function __construct($db) {
-//         $this->db = $db;
-//     }
-
-//     public function getAll() {
-//         try {
-//             $sql = "SELECT * FROM province";
-//             $stmt = $this->db->getConnection()->prepare($sql);
-//             $stmt->execute();
-
-//             return $stmt->fetchAll(PDO::FETCH_ASSOC);
-//         } catch (PDOException $e) {
-//             // Handle errors (log or display)
-//             throw $e; // Re-throw the exception for higher-level handling
-//         }
-//     }
-// }
-?> -->
-
-<!-- town_city.php
-
-<form action="town_city.php" method="post">
-    <label for="name">Town/City Name:</label>
-    <input type="text" name="name" required>
-
-    <input type="submit" value="Save">
-</form> -->
-
-
 <?php
 include_once("db.php"); // Include the file with the Database class
 
@@ -79,7 +44,7 @@ class Province {
             $stmt->execute();
 
             // Fetch the town data as an associative array
-            $studentData = $stmt->fetch(PDO::FETCH_ASSOC);
+            $provinceData = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return $provinceData;
         } catch (PDOException $e) {
@@ -96,13 +61,15 @@ class Province {
 
             $stmt = $this->db->getConnection()->prepare($sql);
             // Bind parameters
+            $stmt->bindValue(':id', $data['id']);
             $stmt->bindValue(':name', $data['name']);
 
             // Execute the query
             $stmt->execute();
 
             return $stmt->rowCount() > 0;
-        } catch (PDOException $e) {
+        } 
+        catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
             throw $e; // Re-throw the exception for higher-level handling
         }

@@ -1,17 +1,17 @@
 <?php
 include_once("../db.php"); // Include the Database class file
-include_once("../town_city.php"); // Include the Town class file
+include_once("../town_city.php"); // Include the Student class file
 
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
-    // Fetch town data by ID from the database
+    // Fetch student data by ID from the database
     $db = new Database();
     $town = new Town($db);
-    $town_id = $town->read($id); // Implement the read method in the Town class
+    $townData = $town->read($id); // Implement the read method in the Student class
 
     if ($townData) {
-        // The towm data is retrieved, and you can pre-fill the edit form with this data.
+        // The student data is retrieved, and you can pre-fill the edit form with this data.
     } else {
         echo "Town not found.";
     }
@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $db = new Database();
     $town = new Town($db);
 
-    // Call the edit method to update the town data
+    // Call the edit method to update the student data
     if ($town->update($id, $data)) {
         echo "Record updated successfully.";
     } else {
@@ -42,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="../css/styles.css">
-    <title>Edit Student</title>
+    <title>Edit Town</title>
 </head>
 <body>
     <!-- Include the header and navbar -->
@@ -55,7 +55,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <input type="hidden" name="id" value="<?php echo $townData['id']; ?>">
         
         <label for="name">Name:</label>
-        <input type="text" name="name" id="name" value="<?php echo $studentData['name']; ?>">
+        <input type="text" name="name" id="name" value="<?php echo $townData['name']; ?>">
+        
         <input type="submit" value="Update">
     </form>
     </div>

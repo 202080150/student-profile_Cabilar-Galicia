@@ -2,6 +2,7 @@
 include_once("db.php");
 include_once("student.php");
 include_once("town_city.php");
+include_once("province.php");
 
 $db = new Database();
 $connection = $db->getConnection();
@@ -14,7 +15,7 @@ $student = new Student($db);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Records</title>
-    <link rel="stylesheet" type="text/css" href="css/styles.css">
+    <link rel="stylesheet" type="text/css" href="css/styles.css">\
 </head>
 <body>
     <!-- Include the header -->
@@ -29,3 +30,5 @@ $student = new Student($db);
     <?php include('templates/footer.html'); ?>
 </body>
 </html>
+
+

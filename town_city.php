@@ -1,13 +1,3 @@
-<!-- town_city.php
-
-<form action="town_city.php" method="post">
-    <label for="name">Town/City Name:</label>
-    <input type="text" name="name" required>
-
-    <input type="submit" value="Save">
-</form> -->
-
-
 <?php
 include_once("db.php"); // Include the file with the Database class
 
@@ -54,9 +44,9 @@ class Town {
             $stmt->execute();
 
             // Fetch the town data as an associative array
-            $studentData = $stmt->fetch(PDO::FETCH_ASSOC);
+            $townData = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $studentData;
+            return $townData;
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
             throw $e; // Re-throw the exception for higher-level handling
@@ -71,13 +61,15 @@ class Town {
 
             $stmt = $this->db->getConnection()->prepare($sql);
             // Bind parameters
+            $stmt->bindValue(':id', $data['id']);
             $stmt->bindValue(':name', $data['name']);
 
             // Execute the query
             $stmt->execute();
 
             return $stmt->rowCount() > 0;
-        } catch (PDOException $e) {
+        } 
+        catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
             throw $e; // Re-throw the exception for higher-level handling
         }

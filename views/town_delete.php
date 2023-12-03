@@ -7,10 +7,10 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id'])) {
 
     // Instantiate the Database and Student classes
     $db = new Database();
-    $student = new Student($db);
+    $town = new Town($db);
 
     // Call the delete method to delete the student record
-    if ($student->delete($id)) {
+    if ($town->delete($id)) {
         echo "Record deleted successfully.";
     } else {
         echo "Failed to delete the record.";

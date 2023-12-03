@@ -39,11 +39,33 @@ class Student {
         }
     }
 
-    public function read($id) {
+    //method for getting all student details
+    public function getAllWithStudentDetails()
+    {
+        try {
+            $sql = "SELECT students.id AS ids, student_number, CONCAT(first_name, ' ', middle_name, ' ', last_name) AS 'full_name', gender, birthday, student_details.*
+                    FROM students
+                    LEFT JOIN student_details ON students.id = student_details.student_id LIMIT 10"; // Modify the LIMIT clause based on your requirements
+
+            $stmt = $this->db->getConnection()->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $result;
+        } catch (PDOException $e) {
+            // Handle errors (log or display)
+            throw $e; // Re-throw the exception for higher-level handling
+        }
+    }
+
+    //Method for reading all student details
+    public function readStudentAndDetails($id)
+    {
         try {
             $connection = $this->db->getConnection();
 
-            $sql = "SELECT * FROM students WHERE id = :id";
+            $sql = "SELECT students.id, students.student_number, students.first_name, students.last_name, students.middle_name, students.gender, students.birthday, student_details.id AS 'details_id', student_details.student_id, student_details.contact_number, student_details.street, student_details.town_city, student_details.province, student_details.zip_code FROM students 
+            LEFT JOIN student_details ON students.id = student_details.student_id WHERE students.id = :id";
             $stmt = $connection->prepare($sql);
             $stmt->bindValue(':id', $id);
             $stmt->execute();
@@ -51,40 +73,62 @@ class Student {
             // Fetch the student data as an associative array
             $studentData = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $studentData;
+            return $studentData ? $studentData : false;
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
             throw $e; // Re-throw the exception for higher-level handling
         }
     }
 
-    public function update($id, $data) {
+    //method for updating student details
+
+    public function updateAllWithStudents($id, $data)
+    {
         try {
-            $sql = "UPDATE students SET
-                    student_number = :student_number,
-                    first_name = :first_name,
-                    middle_name = :middle_name,
-                    last_name = :last_name,
-                    gender = :gender,
-                    birthday = :birthday
-                    WHERE id = :id";
+            $sql = "UPDATE students
+                LEFT JOIN student_details ON students.id = student_details.student_id
+                SET
+                students.student_number = :student_number,
+                students.first_name = :first_name,
+                students.middle_name = :middle_name,
+                students.last_name = :last_name,
+                students.gender = :gender,
+                students.birthday = :birthday,
+                student_details.id = :details_id,
+                student_details.student_id = :student_id,
+                student_details.contact_number = :contact_number,
+                student_details.street = :street,
+                student_details.zip_code = :zip_code,
+                student_details.town_city = :town_city,
+                student_details.province = :province
+                WHERE students.id = :id";
 
             $stmt = $this->db->getConnection()->prepare($sql);
             // Bind parameters
-            $stmt->bindValue(':id', $data['id']);
+            $stmt->bindValue(':id', $id);
             $stmt->bindValue(':student_number', $data['student_number']);
             $stmt->bindValue(':first_name', $data['first_name']);
             $stmt->bindValue(':middle_name', $data['middle_name']);
             $stmt->bindValue(':last_name', $data['last_name']);
             $stmt->bindValue(':gender', $data['gender']);
             $stmt->bindValue(':birthday', $data['birthday']);
+            $stmt->bindValue(':details_id', $data['details_id']);
+            $stmt->bindValue(':student_id', $data['student_id']);
+            $stmt->bindValue(':contact_number', $data['contact_number']);
+            $stmt->bindValue(':street', $data['street']);
+            $stmt->bindValue(':zip_code', $data['zip_code']);
+            $stmt->bindValue(':town_city', $data['town_city']);
+            $stmt->bindValue(':province', $data['province']);
 
-            // Execute the query
+            // Execute the statement
             $stmt->execute();
 
-            return $stmt->rowCount() > 0;
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
+            // Handle the exception
+            echo "SQL Error: " . $e->getMessage(); // Display the full SQL error message
+            echo "<pre>"; // This tag is used for better formatting of the output
+            var_dump($data); // Display the submitted data for debugging
+            echo "</pre>";
             throw $e; // Re-throw the exception for higher-level handling
         }
     }
@@ -108,74 +152,129 @@ class Student {
         }
     }
 
-    public function displayAll(){
-        try {
-            $sql = "SELECT * FROM students LIMIT 10"; // Modify the table name to match your database
-            $stmt = $this->db->getConnection()->prepare($sql);
-            $stmt->execute();
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            return $result;
-        } catch (PDOException $e) {
-            // Handle any potential errors here
-            echo "Error: " . $e->getMessage();
-            throw $e; // Re-throw the exception for higher-level handling
-        }
-    }
- 
-    /*
-        sample simple tests
-    */
-    public function testCreateStudent() {
-        $data = [
-            'student_number' => 'S12345',
-            'first_name' => 'John',
-            'middle_name' => 'Doe',
-            'last_name' => 'Smith',
-            'gender' => '1',
-            'birthday' => '1990-01-15',
-        ];
-
-        $student_id = $this->create($data);
-
-        if ($student_id !== null) {
-            echo "Test passed. Student created with ID: " . $student_id . PHP_EOL;
-            return $student_id;
-        } else {
-            echo "Test failed. Student creation unsuccessful." . PHP_EOL;
-        }
-    }
-
-    public function testReadStudent($id) {
-        $studentData = $this->read($id);
-
-        if ($studentData !== false) {
-            echo "Test passed. Student data read successfully: " . PHP_EOL;
-            print_r($studentData);
-        } else {
-            echo "Test failed. Unable to read student data." . PHP_EOL;
-        }
-    }
-
-    public function testUpdateStudent($id, $data) {
-        $success = $this->update($id, $data);
-
-        if ($success) {
-            echo "Test passed. Student data updated successfully." . PHP_EOL;
-        } else {
-            echo "Test failed. Unable to update student data." . PHP_EOL;
-        }
-    }
-
-    public function testDeleteStudent($id) {
-        $deleted = $this->delete($id);
-
-        if ($deleted) {
-            echo "Test passed. Student data deleted successfully." . PHP_EOL;
-        } else {
-            echo "Test failed. Unable to delete student data." . PHP_EOL;
-        }
-    }
 }
+
+
+    // public function read($id) {
+    //     try {
+    //         $connection = $this->db->getConnection();
+
+    //         $sql = "SELECT * FROM students WHERE id = :id";
+    //         $stmt = $connection->prepare($sql);
+    //         $stmt->bindValue(':id', $id);
+    //         $stmt->execute();
+
+    //         // Fetch the student data as an associative array
+    //         $studentData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    //         return $studentData;
+    //     } catch (PDOException $e) {
+    //         echo "Error: " . $e->getMessage();
+    //         throw $e; // Re-throw the exception for higher-level handling
+    //     }
+    // }
+
+    // public function update($id, $data) {
+    //     try {
+    //         $sql = "UPDATE students SET
+    //                 student_number = :student_number,
+    //                 first_name = :first_name,
+    //                 middle_name = :middle_name,
+    //                 last_name = :last_name,
+    //                 gender = :gender,
+    //                 birthday = :birthday
+    //                 WHERE id = :id";
+
+    //         $stmt = $this->db->getConnection()->prepare($sql);
+    //         // Bind parameters
+    //         $stmt->bindValue(':id', $data['id']);
+    //         $stmt->bindValue(':student_number', $data['student_number']);
+    //         $stmt->bindValue(':first_name', $data['first_name']);
+    //         $stmt->bindValue(':middle_name', $data['middle_name']);
+    //         $stmt->bindValue(':last_name', $data['last_name']);
+    //         $stmt->bindValue(':gender', $data['gender']);
+    //         $stmt->bindValue(':birthday', $data['birthday']);
+
+    //         // Execute the query
+    //         $stmt->execute();
+
+    //         return $stmt->rowCount() > 0;
+    //     } catch (PDOException $e) {
+    //         echo "Error: " . $e->getMessage();
+    //         throw $e; // Re-throw the exception for higher-level handling
+    //     }
+    // }
+
+
+
+    // public function displayAll(){
+    //     try {
+    //         $sql = "SELECT * FROM students LIMIT 50"; // Modify the table name to match your database
+    //         $stmt = $this->db->getConnection()->prepare($sql);
+    //         $stmt->execute();
+    //         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    //         return $result;
+    //     } catch (PDOException $e) {
+    //         // Handle any potential errors here
+    //         echo "Error: " . $e->getMessage();
+    //         throw $e; // Re-throw the exception for higher-level handling
+    //     }
+    // }
+ 
+    // /*
+    //     sample simple tests
+    // */
+    // public function testCreateStudent() {
+    //     $data = [
+    //         'student_number' => 'S12345',
+    //         'first_name' => 'John',
+    //         'middle_name' => 'Doe',
+    //         'last_name' => 'Smith',
+    //         'gender' => '1',
+    //         'birthday' => '1990-01-15',
+    //     ];
+
+    //     $student_id = $this->create($data);
+
+    //     if ($student_id !== null) {
+    //         echo "Test passed. Student created with ID: " . $student_id . PHP_EOL;
+    //         return $student_id;
+    //     } else {
+    //         echo "Test failed. Student creation unsuccessful." . PHP_EOL;
+    //     }
+    // }
+
+//     public function testReadStudent($id) {
+//         $studentData = $this->read($id);
+
+//         if ($studentData !== false) {
+//             echo "Test passed. Student data read successfully: " . PHP_EOL;
+//             print_r($studentData);
+//         } else {
+//             echo "Test failed. Unable to read student data." . PHP_EOL;
+//         }
+//     }
+
+//     public function testUpdateStudent($id, $data) {
+//         $success = $this->update($id, $data);
+
+//         if ($success) {
+//             echo "Test passed. Student data updated successfully." . PHP_EOL;
+//         } else {
+//             echo "Test failed. Unable to update student data." . PHP_EOL;
+//         }
+//     }
+
+//     public function testDeleteStudent($id) {
+//         $deleted = $this->delete($id);
+
+//         if ($deleted) {
+//             echo "Test passed. Student data deleted successfully." . PHP_EOL;
+//         } else {
+//             echo "Test failed. Unable to delete student data." . PHP_EOL;
+//         }
+//     }
+// }
 
 
 // $student = new Student(new Database());

@@ -7,7 +7,7 @@ if (isset($_GET['id'])) {
 
     // Fetch student data by ID from the database
     $db = new Database();
-    $province = new Province($db);
+    $province = new Province($db);  
     $provinceData = $province->read($id); // Implement the read method in the Student class
 
     if ($provinceData) {
