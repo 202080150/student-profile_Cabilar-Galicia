@@ -52,7 +52,7 @@ $chartData = $chart->report3();
         // Create a pie chart
         var ctx = document.getElementById('chartGender').getContext('2d');
         var chart = new Chart(ctx, {
-            type: 'bar',
+            type: 'pie',
             data: {
                 labels: labels,
                 datasets: [{

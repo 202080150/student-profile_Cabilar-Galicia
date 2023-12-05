@@ -1,7 +1,7 @@
 <?php
 include_once("db.php"); // Include the file with the Database class
 
-class Student {
+class Student{
     private $db;
 
     public function __construct($db) {

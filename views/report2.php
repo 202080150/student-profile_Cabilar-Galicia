@@ -1,10 +1,10 @@
 <?php
 include_once("../db.php");
-include_once("../town_city.php");
+include_once("../student.php");
 
 $db = new Database();
 $connection = $db->getConnection();
-$town = new Town($db);
+$student = new Student($db);
 
 ?>
 <!DOCTYPE html>
@@ -40,7 +40,7 @@ $town = new Town($db);
         
     </div>
 
-    <a class="button-link" href="town_add.php">Add New Record</a>
+    <a class="button-link" href="student_add.php">Add New Record</a>
     </div>
 
     <!-- Include the footer -->
@@ -48,17 +48,17 @@ $town = new Town($db);
     <script>
         // Extract data from PHP and create chart
         const chartData = <?php echo json_encode($chartData); ?>;
-        const labels = chartData.map(entry => entry.town_city);
+        const labels = chartData.map(entry => entry.student);
         const data = chartData.map(entry => entry.student_count);
 
         // Create a bar chart
         var ctx = document.getElementById('chartStudents').getContext('2d');
         var chart = new Chart(ctx, {
-            type: 'line',
+            type: 'bar',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Number of Students',
+                    label: 'Students Birthday'
                     data: data,
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(75, 192, 192, 1)',
